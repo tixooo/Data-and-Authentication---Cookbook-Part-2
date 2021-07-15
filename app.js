@@ -47,6 +47,13 @@ function createRecipeCard(recipe) {
 }
 
 window.addEventListener('load', async () => {
+    const token = sessionStorage.getItem(`userToken`);
+    if (token != null) {
+        document.getElementById(`user`).style.display = `inline`;
+        document.getElementById(`logoutBtn`).addEventListener(`click`, logOut)
+    } else {
+        document.getElementById(`guest`).style.display = `inline`;
+    }
     const main = document.querySelector('main');
 
     const recipes = await getRecipes();
@@ -79,4 +86,18 @@ function e(type, attributes, ...content) {
     });
 
     return result;
+}
+
+async function logOut() {
+    const token = sessionStorage.getItem(`userToken`);
+    const response = await fetch(`http://localhost:3030/users/logout`, {
+        method: "get",
+        headers: { "X-Authorization": token}
+    })
+    if (response.ok == false){
+        const error = await response.json();
+        return alert(error.message);
+    }
+    sessionStorage.removeItem(`userToken`);
+    window.location.pathname = `/1/lesson-03/base/index.html`;
 }
